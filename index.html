@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PertuCBR – Diagnosis Pertussis dengan Case-Based Reasoning</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6eced;--card:#fffafa;--ink:#2a0a0d;--mute:#7d5a5e;--red:#b01c24;--maroon:#4a0709;--soft:#fbe3e4;--line:#ecd3d5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a0b0d;--card:#2a1316;--ink:#f8e9ea;--mute:#c9a3a6;--soft:#43191d;--line:#4a2428}}
+:root[data-theme="dark"]{--bg:#1a0b0d;--card:#2a1316;--ink:#f8e9ea;--mute:#c9a3a6;--soft:#43191d;--line:#4a2428}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+nav{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.logo{font-weight:800;display:flex;gap:8px;align-items:center}.logo svg{width:24px;fill:none;stroke:var(--red);stroke-width:2}
+nav a{color:var(--mute);text-decoration:none;font-size:14px;font-weight:600;margin-left:16px}
+.hero{background:linear-gradient(160deg,#7d0f15,#3a0508 70%,#1c0305);color:#fff;border-radius:0 0 36px 36px;padding:56px 0 70px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(32px,6vw,52px);line-height:1.1;margin:0 0 14px;max-width:560px}.hero h1 em{color:#ff5a62;font-style:normal}
+.hero p{max-width:480px;color:#f3cfd1;margin:0 0 26px}
+.btn{display:inline-block;border:0;border-radius:999px;padding:13px 26px;font:800 15px Manrope,sans-serif;cursor:pointer;background:var(--red);color:#fff;text-decoration:none}
+.btn.light{background:#fff;color:var(--red)}.btn.ghost{background:var(--soft);color:var(--red)}
+.ecg{position:absolute;right:-20px;bottom:18px;width:60%;max-width:520px;opacity:.55}
+section{padding:42px 0 6px}h2{font-size:26px;margin:0 0 6px}.sub{color:var(--mute);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 10px 30px rgba(120,20,30,.07)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
+.sym{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--line);border-radius:16px;cursor:pointer;background:var(--card)}
+.sym:has(input:checked){border-color:var(--red);background:var(--soft)}
+.sym input[type=checkbox]{accent-color:var(--red);width:18px;height:18px}
+.sym b{color:var(--red);font-size:13px;min-width:26px}.sym span{flex:1;font-size:14px}
+.sym label{font-size:11px;color:var(--mute)}.sym input[type=number]{width:52px;border:1px solid var(--line);border-radius:8px;padding:3px 5px;background:var(--bg);color:var(--ink);font:inherit;font-size:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.best{background:linear-gradient(150deg,#b01c24,#6d0d12);color:#fff;border-radius:24px;padding:24px;margin-bottom:14px}
+.best small{opacity:.8}.best h3{font-size:28px;margin:4px 0}.best .pct{font-size:46px;font-weight:800}
+.bar{height:10px;border-radius:9px;background:var(--soft);overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--red);border-radius:9px;transition:width .5s}
+.best .bar{background:rgba(255,255,255,.25)}.best .bar i{background:#fff}
+.rk{display:flex;justify-content:space-between;font-weight:700}.rk span:last-child{color:var(--red)}
+details{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}summary{cursor:pointer;font-weight:700}
+.calc{font-size:13.5px;color:var(--mute);margin:8px 0 0;word-break:break-word}.calc b{color:var(--ink)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px;text-align:center}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line)}th{color:var(--mute);font-size:12px}td:first-child,th:first-child{text-align:left;font-weight:700}
+.on{background:var(--red);color:#fff;border-radius:8px;padding:2px 9px;font-weight:700}.off{color:var(--mute)}
+.formula{background:var(--soft);border-radius:16px;padding:14px;text-align:center;font-weight:700;margin-top:12px}
+.note{background:var(--soft);border-left:4px solid var(--red);border-radius:12px;padding:12px 14px;font-size:14px;margin-top:14px}
+footer{text-align:center;color:var(--mute);font-size:13px;padding:36px 0 30px}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+<div class="logo"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.800-8 11-8 11z"/></svg>PertuCBR</div>
+<div><a href="#diagnosis">Diagnosis</a><a href="#kasus">Basis Kasus</a><a href="#metode">Metode</a></div>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+<h1>Kenali <em>Pertussis</em> Lebih Dini</h1>
+<p>Sistem pendukung keputusan berbasis Case-Based Reasoning dengan Cosine Similarity untuk mencocokkan gejala dengan kasus pertussis ringan, akut, dan subakut/kronis.</p>
+<a class="btn light" href="#diagnosis">Mulai Diagnosis →</a>
+</div>
+<svg class="ecg" viewBox="0 0 400 80" fill="none" stroke="#ff5a62" stroke-width="2"><path d="M0 40h110l12-28 16 56 14-44 10 16h80l12-24 16 48 12-24h118"/></svg>
+</header>
+
+<main class="wrap">
+<section id="diagnosis">
+<h2>Diagnosis Kasus Baru</h2>
+<p class="sub">Pilih gejala yang dialami (kasus baru P04). Bobot tiap gejala bisa diubah; bawaan 1 sesuai lembar pengerjaan.</p>
+<div class="card">
+<div class="grid" id="syms"></div>
+<div class="row"><button class="btn" id="go">Hitung Similarity</button><button class="btn ghost" id="reset">Reset</button><button class="btn ghost" id="demo">Contoh P04</button></div>
+</div>
+</section>
+
+<section id="hasil">
+<h2>Hasil Perhitungan</h2>
+<p class="sub">Urutan kemiripan kasus baru terhadap basis kasus.</p>
+<div id="out"></div>
+</section>
+
+<section id="kasus">
+<h2>Basis Kasus</h2>
+<p class="sub">Relasi antara penyakit dan gejala (1 = ada, 0 = tidak ada).</p>
+<div class="card tw"><table id="tbl"></table></div>
+</section>
+
+<section id="metode">
+<h2>Metode Cosine Similarity</h2>
+<div class="card">
+<p style="margin:0">Setiap kasus diubah menjadi vektor gejala. Kemiripan dihitung dari sudut antara vektor kasus baru (A) dan kasus lama (B). Nilai mendekati 100% berarti makin mirip.</p>
+<div class="formula">cos(A,B) = (A · B) / (‖A‖ × ‖B‖)</div>
+<div class="note"><b>Catatan:</b> pada lembar tulisan tangan, panjang vektor P02 tertulis √3, padahal P02 punya 4 gejala (G3, G4, G5, G6) sehingga panjangnya √4 = 2. Selain itu G6 dimiliki P04 dan P02 sekaligus, jadi dot product-nya 2. Website ini menghitung ulang secara konsisten, hasil P04 vs P02 menjadi 50%, bukan 28,87%.</div>
+<p class="sub" style="margin-top:14px;margin-bottom:0">Sumber data: Nofriansyah, Gunawan &amp; Elfitriani (2020), J-SISKO TECH Vol.3 No.1, hlm. 41–54.</p>
+</div>
+</section>
+</main>
+<footer>PertuCBR · Tugas SPK · Hasil hanya alat bantu, bukan pengganti diagnosis dokter.</footer>
+
+<script>
+const S=["Hidung meler","Bersin-bersin","Demam serta pengap","Batuk keras dengan tarikan napas panjang","Terdengar seperti mau muntah","Mata merah dan berair","Wajah berwarna merah atau biru","Kelelahan ekstrem","Suara tinggi melengking saat tarik napas"];
+const C=[{k:"P01",n:"Pertussis Ringan",g:[1,2,3,4]},{k:"P02",n:"Pertussis Akut",g:[3,4,5,6]},{k:"P03",n:"Pertussis Subakut/Kronis",g:[4,7,8,9]}];
+const DEMO=[1,3,6,9];
+const $=id=>document.getElementById(id);
+$("syms").innerHTML=S.map((s,i)=>`<div class="sym"><input type="checkbox" id="c${i}" aria-label="G${i+1}"><b>G${i+1}</b><span onclick="c${i}.click()">${s}</span><label>bobot <input type="number" id="w${i}" value="1" min="0" step="0.5"></label></div>`).join("");
+$("tbl").innerHTML="<tr><th>Kode</th>"+S.map((_,i)=>`<th>G${i+1}</th>`).join("")+"</tr>"+
+C.map(c=>`<tr><td>${c.k} · ${c.n}</td>`+S.map((_,i)=>`<td>${c.g.includes(i+1)?'<span class="on">1</span>':'<span class="off">0</span>'}</td>`).join("")+"</tr>").join("");
+const fmt=x=>(Math.round(x*10000)/100).toString().replace(".",",");
+function run(){
+ const w=S.map((_,i)=>Math.max(0,parseFloat($("w"+i).value)||0));
+ const q=S.map((_,i)=>$("c"+i).checked?w[i]:0);
+ const out=$("out");
+ if(!q.some(v=>v>0)){out.innerHTML='<div class="card">Pilih minimal satu gejala terlebih dahulu.</div>';return}
+ const nq=Math.sqrt(q.reduce((a,v)=>a+v*v,0));
+ const res=C.map(c=>{
+  const v=S.map((_,i)=>c.g.includes(i+1)?w[i]:0);
+  const dot=q.reduce((a,x,i)=>a+x*v[i],0), nc=Math.sqrt(v.reduce((a,x)=>a+x*x,0));
+  const terms=q.map((x,i)=>x*v[i]?`G${i+1}(${x}×${v[i]})`:null).filter(Boolean);
+  return {...c,dot,nc,terms,sim:dot/(nq*nc)};
+ }).sort((a,b)=>b.sim-a.sim);
+ const b=res[0];
+ let h=`<div class="best"><small>Kasus paling mirip</small><h3>${b.k} · ${b.n}</h3><div class="pct">${fmt(b.sim)}%</div><div class="bar"><i style="width:${b.sim*100}%"></i></div></div><div class="card">`;
+ h+=res.map(r=>`<div style="margin-bottom:14px"><div class="rk"><span>P04 dengan ${r.k} · ${r.n}</span><span>${fmt(r.sim)}%</span></div><div class="bar"><i style="width:${r.sim*100}%"></i></div>
+ <details><summary>Lihat langkah hitung</summary><p class="calc">A·B = ${r.terms.length?r.terms.join(" + "):"0"} = <b>${r.dot}</b><br>‖P04‖ = √${nq*nq} = <b>${nq.toFixed(4)}</b> &nbsp; ‖${r.k}‖ = √${r.nc*r.nc} = <b>${r.nc.toFixed(4)}</b><br>Similarity = ${r.dot} / (${nq.toFixed(4)} × ${r.nc.toFixed(4)}) = <b>${r.sim.toFixed(4)}</b> = <b>${fmt(r.sim)}%</b></p></details></div>`).join("");
+ const tie=res.filter(r=>Math.abs(r.sim-b.sim)<1e-9);
+ if(tie.length>1)h+=`<div class="note">Nilai tertinggi sama untuk ${tie.map(t=>t.k).join(" dan ")}. Tambahkan gejala atau atur bobot untuk membedakan.</div>`;
+ out.innerHTML=h+"</div>";
+}
+function setSel(a){S.forEach((_,i)=>$("c"+i).checked=a.includes(i+1))}
+$("go").onclick=()=>{run();$("hasil").scrollIntoView()};
+$("reset").onclick=()=>{setSel([]);S.forEach((_,i)=>$("w"+i).value=1);run()};
+$("demo").onclick=()=>{setSel(DEMO);run()};
+setSel(DEMO);run();
+</script>
+</body>
+</html>
